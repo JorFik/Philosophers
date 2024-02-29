@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 12:03:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 04:13:39 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/02/29 09:59:22 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,9 @@ int	finish_simulation(t_phil_schedule *phil)
 
 	i = -1;
 	while (++i < phil->count)
-	{
 		pthread_mutex_destroy(&phil->forks[i]);
-		pthread_detach(phil->philosopher[i]);
-	}
-	pthread_detach((pthread_t) phil->death_timer);
 	pthread_mutex_destroy(phil->print);
+	pthread_mutex_destroy(phil->take_forks);
 	if (phil->philosopher)
 		free(phil->philosopher);
 	if (phil->ate)
@@ -33,6 +30,8 @@ int	finish_simulation(t_phil_schedule *phil)
 		free(phil->forks);
 	if (phil->phil_has_fork)
 		free(phil->phil_has_fork);
+	if (phil->can_eat)
+		free(phil->can_eat);
 	memset(phil, 0, sizeof(t_phil_schedule));
 	if (errno)
 		return (errno);

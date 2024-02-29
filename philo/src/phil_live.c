@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:30:15 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 09:16:03 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/02/29 09:29:21 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,17 +71,17 @@ void	*odd_phil(void *arg)
 	{
 		if (state != EAT)
 		{
-			times_ate += eat_meal(i, phil, FALSE);
+			times_ate += eat_meal(i, phil);
 			state = EAT;
 		}
 		if (phil && times_ate >= phil->meal_count)
-			return (eat_meal(i, phil, TRUE), end_phil(phil, i), NULL);
+			return (end_phil(phil, i), NULL);
 		if (state != SLEEP)
 			state = take_nap(i, phil);
 		if (state != THINK)
 			state = print_state(phil, i, THINK);
 	}
-	return (eat_meal(i, phil, TRUE), end_phil(phil, i), NULL);
+	return (end_phil(phil, i), NULL);
 }
 
 void	*even_phil(void *arg)
@@ -100,7 +100,7 @@ void	*even_phil(void *arg)
 			state = print_state(phil, i, THINK);
 		if (state != EAT)
 		{
-			times_ate += eat_meal(i, phil, FALSE);
+			times_ate += eat_meal(i, phil);
 			state = EAT;
 		}
 		if (phil && times_ate >= phil->meal_count)

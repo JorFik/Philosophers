@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 02:05:22 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 08:56:45 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/02/29 09:27:22 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,20 +73,10 @@ static int	take_forks(const int i, t_phil_schedule *phil, int *can_eat)
 	return (1);
 }
 
-int	eat_meal(const int i, t_phil_schedule *phil, int free_flag)
+int	eat_meal(const int i, t_phil_schedule *phil)
 {
-	static int	*can_eat = NULL;
-
-	if (free_flag && i == 0 && can_eat)
-		return (free(can_eat), can_eat = NULL, 0);
-	if (!can_eat)
-	{
-		can_eat = ft_calloc(phil->count, sizeof(int));
-		if (error((int [3]){IF_NULL, CAN_EAT, EATING}, can_eat))
-			return (0);
-	}
-	restart_can_eat(phil, can_eat);
-	if (can_eat && take_forks(i, phil, can_eat))
+	restart_can_eat(phil, phil->can_eat);
+	if (phil->can_eat && take_forks(i, phil, phil->can_eat))
 	{
 		print_state(phil, i, FORK);
 		print_state(phil, i, FORK);

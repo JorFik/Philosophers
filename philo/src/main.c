@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 09:24:03 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/02/29 10:11:54 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ static void	simulation(t_phil_schedule *phil)
 	{
 		args->i = i;
 		if (i % 2 == 0)
-			pthread_create(&phil->philosopher[i], NULL, odd_phil, args);
+			pthread_create(&phil->philosopher[i], NULL, &odd_phil, args);
 		else
-			pthread_create(&phil->philosopher[i], NULL, even_phil, args);
+			pthread_create(&phil->philosopher[i], NULL, &even_phil, args);
 	}
 	pthread_create(phil->death_timer, NULL, death_timer, phil);
 }
@@ -57,9 +57,9 @@ static int	initilize_philos(t_phil_schedule *phil, int argc, char **argv)
 	phil->phil_has_fork = ft_calloc(phil->count, sizeof(int));
 	if (error((int [3]){IF_NULL, FLAG_FORK, INIT_PHIL}, phil->phil_has_fork))
 		return (1);
-	// phil->can_eat = ft_calloc(phil->count, sizeof(int));
-	// if (error((int [3]){IF_NULL, CAN_EAT, INIT_PHIL}, phil->can_eat))
-	// 	return (1);
+	phil->can_eat = ft_calloc(phil->count, sizeof(int));
+	if (error((int [3]){IF_NULL, CAN_EAT, INIT_PHIL}, phil->can_eat))
+		return (1);
 	return (0);
 }
 

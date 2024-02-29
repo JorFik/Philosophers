@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 18:51:01 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 04:49:50 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/02/29 10:01:25 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ static char	*get_where(int where)
 		return ("for an odd philosopher.");
 	if (where == EVEN)
 		return ("for an even philosopher.");
-	if (where == EATING)
-		return ("at eat meal.");
 	if (where == DEATH_T)
 		return ("at init death timer.");
 	return ("at unknown location.");

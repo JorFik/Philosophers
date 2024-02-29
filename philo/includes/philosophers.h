@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 09:22:49 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/02/29 09:28:21 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,6 @@ typedef struct s_death_timer
 	@note//_PARAMETERS
 	@param i The index of the philosopher.
 	@param phil The philosophers structure.
-	@param free_flag A flag to tell the function if it should free the array of
-		`can_eat` that is used to keep track of who is next to eat.
 	@note//_NOTES
 	@note It does nothing if the philosopher has already eaten.
 	@note It communicates with `phil_has_fork`, `phil_ate` and `meal_count`.
@@ -103,7 +101,7 @@ typedef struct s_death_timer
 	@note//_RETURN
 	@return 1 if the philosopher has eaten, otherwise 0.
  */
-int		eat_meal(const int i, t_phil_schedule *phil, int free_flag);
+int		eat_meal(const int i, t_phil_schedule *phil);
 
 /**
 	@brief #### Print the state of a philosopher.
