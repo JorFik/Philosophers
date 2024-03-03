@@ -1,3 +1,4 @@
+# (The Project is still under construction, keep up with the updates for its completion (including the Bonus part) ;])
 # Philosophers
 Philosophers is a multithreaded dining philosophers problem simulator. The problem is a classic multi-process synchronization problem which was originally formulated in 1965 by Edsger Dijkstra.
 
