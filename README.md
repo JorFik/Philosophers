@@ -20,18 +20,19 @@ Each philosopher should be a thread.
 
 Each fork is represented by a mutex.
 
+
 ## Usage
 To compile the program, run:
 
 ``` C
-make
+make -C philo
 ```
 
 To start the simulation, run:
-_Substitute `N`, `die_time`, `eat_time`, `sleep_time`, and `meal_count` with the desired values._
 ``` C
-./philo N die_time eat_time sleep_time [meal_count]
+./philo/philo N die_time eat_time sleep_time [meal_count]
 ```
+_Substitute `N`, `die_time`, `eat_time`, `sleep_time`, and `meal_count` with the desired values._
 
 ### Output
 The program provides the following output for each philosopher:
