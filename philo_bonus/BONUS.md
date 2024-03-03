@@ -1,4 +1,4 @@
-# (At this point only the mandatory part is implemented.)
+# (At this point only the mandatory part is implemented. Keep up with the updates for the bonus part ;].)
 # Philosophers Bonus
 This is the bonus component of the Philosophers project. In this part of the project, processes instead of threads and semaphores instead of mutexes are used to solve the dining philosophers problem.
 
