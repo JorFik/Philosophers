@@ -7,11 +7,11 @@ There are `N` philosophers sitting around a round table. Each philosopher has a 
 ## Specifications
 1. The program takes in the following arguments:
 
-- `N` - the number of philosophers
-- `die_time` - time to die (in milliseconds). If a philosopher doesn’t start eating `die_time` milliseconds after starting his last meal or the beginning of the simulation, it dies
-- `eat_time` - time the philosopher will need to eat (in milliseconds). During that time they will need to keep the two forks
-- `sleep_time` - time the philosopher will need to sleep (in milliseconds)
-- `meal_count` - (optional) number of times each philosopher must eat. If all philosophers eat at least `meal_count` times, the simulation will stop
+- - `N` - the number of philosophers
+- - `die_time` - time to die (in milliseconds). If a philosopher doesn’t start eating `die_time` milliseconds after starting his last meal or the beginning of the simulation, it dies
+- - `eat_time` - time the philosopher will need to eat (in milliseconds). During that time they will need to keep the two forks
+- - `sleep_time` - time the philosopher will need to sleep (in milliseconds)
+- - `meal_count` - (optional) number of times each philosopher must eat. If all philosophers eat at least `meal_count` times, the simulation will stop
 
 1. The philosophers are numbered from 1 to N.
 1. The simulation uses threads and mutexes.
