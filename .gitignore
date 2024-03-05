@@ -1,0 +1,6 @@
+en.subject.pdf
+.vscode
+*/*/*.o
+*/philo
+*/philo_bonus
+*/debugger
