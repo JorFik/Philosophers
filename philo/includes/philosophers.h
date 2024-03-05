@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/05 19:53:43 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/05 20:18:28 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,10 @@ int			print_state(t_phil_schedule *phil, int i, int state);
 		result in milliseconds.
 	@note//_PARAMETERS
 	@param phil The philosophers structure containing the start time.
+	@note//_RETURN
+	@return The time stamp in milliseconds.
+	@note//_NOTES
+	@note If `phil` is `NULL`, it will return the current time.
  */
 useconds_t	get_time(t_phil_schedule *phil);
 

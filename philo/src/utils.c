@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 12:03:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/03 20:17:32 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/05 20:08:47 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ int	finish_simulation(t_phil_schedule *phil, int *original_can_eat)
 	if (original_can_eat)
 		free(original_can_eat);
 	memset(phil, 0, sizeof(t_phil_schedule));
-	printf("\t\t\t\t\t\tSimulation finished\n");
+	printf("\t\t\t\tSimulation finished\n");
 	if (errno)
 		return (errno);
 	return (0);
