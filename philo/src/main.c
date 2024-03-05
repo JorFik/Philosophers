@@ -6,33 +6,35 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 10:11:54 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/03 21:09:26 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-static void	simulation(t_phil_schedule *phil)
+static void	simulation(t_phil_schedule *phil, int *i)
 {
-	int			i;
 	t_phil_args	args[1];
+	extern int	errno;
 
-	i = -1;
-	while (++i < phil->count)
-		pthread_mutex_init(&phil->forks[i], NULL);
+	(*i) = -1;
+	while (++(*i) < phil->count)
+		pthread_mutex_init(&phil->forks[(*i)], NULL);
 	pthread_mutex_init(phil->print, NULL);
 	pthread_mutex_init(phil->take_forks, NULL);
-	i = -1;
+	(*i) = -1;
 	args->phil = phil;
-	while (++i < phil->count)
+	printf("\t\t\t\t\tStart simulation\n");
+	phil->start_time = get_time(NULL);
+	if (error((int [3]){phil->start_time, GET_TIME, START_SIM}, NULL))
+		return ;
+	while (++(*i) < phil->count)
 	{
-		args->i = i;
-		if (i % 2 == 0)
-			pthread_create(&phil->philosopher[i], NULL, &odd_phil, args);
-		else
-			pthread_create(&phil->philosopher[i], NULL, &even_phil, args);
+		args->i = (*i);
+		pthread_create(&phil->philosopher[(*i)], NULL, &phil_live, args);
+		usleep(50);
 	}
-	pthread_create(phil->death_timer, NULL, death_timer, phil);
+	death_timer(phil);
 }
 
 static int	initilize_philos(t_phil_schedule *phil, int argc, char **argv)
@@ -54,10 +56,10 @@ static int	initilize_philos(t_phil_schedule *phil, int argc, char **argv)
 	phil->forks = ft_calloc(phil->count, sizeof(pthread_mutex_t));
 	if (error((int [3]){IF_NULL, ALLOC_FORKS, INIT_PHIL}, phil->forks))
 		return (1);
-	phil->phil_has_fork = ft_calloc(phil->count, sizeof(int));
+	phil->phil_has_fork = ft_calloc(phil->count + 1, sizeof(int));
 	if (error((int [3]){IF_NULL, FLAG_FORK, INIT_PHIL}, phil->phil_has_fork))
 		return (1);
-	phil->can_eat = ft_calloc(phil->count, sizeof(int));
+	phil->can_eat = ft_calloc(phil->count + 1, sizeof(int));
 	if (error((int [3]){IF_NULL, CAN_EAT, INIT_PHIL}, phil->can_eat))
 		return (1);
 	return (0);
@@ -67,7 +69,9 @@ int	main(int argc, char **argv)
 {
 	t_phil_schedule	phil[1];
 	int				i;
+	int				*original_can_eat;
 
+	original_can_eat = NULL;
 	if (argc < 5)
 		return (error((int [3]){-1, LESS_ARGS, ARGS}, NULL));
 	if (argc > 6)
@@ -75,17 +79,14 @@ int	main(int argc, char **argv)
 	if (ft_atoi(argv[1]) < 1)
 		return (error((int [3]){-1, NO_PHIL, SIMULATION}, NULL));
 	if (initilize_philos(phil, argc, argv))
-		return (finish_simulation(phil));
-	phil->start_time = get_time(NULL);
-	if (phil->start_time == -1)
-		return (GET_TIME);
-	simulation(phil);
+		return (finish_simulation((t_phil_schedule *)phil, original_can_eat));
+	original_can_eat = phil->can_eat;
+	simulation(phil, &i);
 	i = 0;
 	while (i < phil->count)
 	{
 		pthread_join(phil->philosopher[i], NULL);
 		i++;
 	}
-	pthread_join((pthread_t) phil->death_timer, NULL);
-	return (finish_simulation(phil));
+	return (finish_simulation((t_phil_schedule *)phil, original_can_eat));
 }

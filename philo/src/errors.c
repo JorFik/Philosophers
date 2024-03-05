@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 18:51:01 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 10:01:25 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/01 18:38:46 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,10 @@ static char	*get_where(int where)
 		return ("you beat the system, are you happy?, I feel empty.");
 	if (where == TIME_STAMP)
 		return ("for the time stamp.");
-	if (where == ODD)
-		return ("for an odd philosopher.");
-	if (where == EVEN)
-		return ("for an even philosopher.");
 	if (where == DEATH_T)
 		return ("at init death timer.");
+	if (where == START_SIM)
+		return ("before starting simulation.");
 	return ("at unknown location.");
 }
 

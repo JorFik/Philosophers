@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 09:28:21 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/05 19:53:43 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ enum e_printed_stamps
 {
 	DEATH,
 	FORK,
+	THINK,
 	EAT,
 	SLEEP,
-	THINK,
 	FULL,
 	ALL_FULL,
 };
@@ -101,7 +101,7 @@ typedef struct s_death_timer
 	@note//_RETURN
 	@return 1 if the philosopher has eaten, otherwise 0.
  */
-int		eat_meal(const int i, t_phil_schedule *phil);
+int			eat_meal(const int i, t_phil_schedule *phil);
 
 /**
 	@brief #### Print the state of a philosopher.
@@ -118,17 +118,17 @@ int		eat_meal(const int i, t_phil_schedule *phil);
 	@note//_RETURN
 	@return The state of the philosopher.
  */
-int		print_state(t_phil_schedule *phil, int i, int state);
+int			print_state(t_phil_schedule *phil, int i, int state);
 
 /**
-	@brief #### Creates the time stamp.
 	@note//_DESCRIPTION
+	@brief #### Creates the time stamp.
 	@brief Takes the current time, substracts the start time and returns the
 		result in milliseconds.
 	@note//_PARAMETERS
 	@param phil The philosophers structure containing the start time.
  */
-int		get_time(t_phil_schedule *phil);
+useconds_t	get_time(t_phil_schedule *phil);
 
 /**
 	@brief #### Returns all the resources to the system.
@@ -137,10 +137,11 @@ int		get_time(t_phil_schedule *phil);
 		mutexes.
 	@note//_PARAMETERS
 	@param phil The philosophers structure containing all the resources.
+	@param original_can_eat The original address of `can_eat` array.
 	@note//_RETURN
 	@return 0 if no error, otherwise the error number.
  */
-int		finish_simulation(t_phil_schedule *phil);
+int			finish_simulation(t_phil_schedule *phil, int *original_can_eat);
 
 /**
 	@brief #### Keep track of the time and check if a philosopher has died.
@@ -159,20 +160,7 @@ int		finish_simulation(t_phil_schedule *phil);
 	@note It communicates with `even_phil`, `odd_phil` and the main thread
 		through `phil_ate` and `someone_died`.
  */
-void	*death_timer(void	*arg);
-
-/**
-	@brief #### Start function for the even philosophers.
-	@note//_DESCRIPTION
-	@brief The scheduler function for the even philosophers.
-	@note//_PARAMETERS
-	@param arg The structure containing the philosopher's index and the
-		philosophers structure.
-	@note//_NOTES
-	@note It communicates with `death_timer`, other `philosophers` and the main
-		thread through `phil_ate`, `is_fork_free` and `meal_count`.
- */
-void	*even_phil(void *arg);
+void		*death_timer(void	*arg);
 
 /**
 	@brief #### Start function for the odd philosophers.
@@ -185,7 +173,7 @@ void	*even_phil(void *arg);
 	@note It communicates with `death_timer`, other `philosophers` and the main
 		thread through `phil_ate`, `is_fork_free` and `meal_count`.
  */
-void	*odd_phil(void *arg);
+void		*phil_live(void *arg);
 
 /**
 	@brief #### Print an error message and return an error number.
@@ -204,7 +192,7 @@ void	*odd_phil(void *arg);
 	@note//_RETURN
 	@return 0 if no error, otherwise the error number.
  */
-int		error(int check[3], void *if_null);
+int			error(int check[3], void *if_null);
 
 /**
 	@brief #### Allocate memory and set it to zero.
@@ -220,7 +208,7 @@ int		error(int check[3], void *if_null);
 	@warning Undefined behavior if count or size is 0.
 	@warning Undefined behavior if the allocation fails.
  */
-void	*ft_calloc(size_t count, size_t size);
+void		*ft_calloc(size_t count, size_t size);
 
 /**
 	@brief #### Print the philosophers structure.
@@ -232,7 +220,7 @@ void	*ft_calloc(size_t count, size_t size);
 	@note This Function is used for debugging purposes and it is not part of the
 		of the final program.
  */
-void	print_philosophers(t_phil_schedule *phil);
+void		print_philosophers(t_phil_schedule *phil);
 
 /**
 	@note//_DESCRIPTION
@@ -250,7 +238,7 @@ void	print_philosophers(t_phil_schedule *phil);
 	@note//_WARNINGS
 	@warning Undefined behavior if str is NULL.
  */
-int		ft_atoi(char *str);
+int			ft_atoi(char *str);
 
 //_--------------------------------------------------------------------------_//
 
@@ -272,13 +260,13 @@ int		ft_atoi(char *str);
 //?		void	*memset(void *b, int c, size_t len);
  */
 
-int		printf(const char *format, ...);
+int			printf(const char *format, ...);
 
-void	*malloc(size_t size);
+void		*malloc(size_t size);
 
-void	free(void *ptr);
+void		free(void *ptr);
 
-ssize_t	write(int fd, const void *buf, size_t count);
+ssize_t		write(int fd, const void *buf, size_t count);
 
 /**
 	@brief #### Delay execution for a number of microseconds.
@@ -294,7 +282,7 @@ ssize_t	write(int fd, const void *buf, size_t count);
 	@note//_WARNING
 	@warning may not work for values of `microseconds` greater than 1,000,000.
  */
-int		usleep(useconds_t microseconds);
+int			usleep(useconds_t microseconds);
 
 /**
 	@brief #### Get the current time.
@@ -344,8 +332,8 @@ int		usleep(useconds_t microseconds);
 	@note//_WARNING
 	@warning
  */
-int		pthread_create(pthread_t *thread, const pthread_attr_t *attr,
-			void *(*start_routine) (void *), void *arg);
+int			pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+				void *(*start_routine) (void *), void *arg);
 
 /**
 	@brief #### Suspend execution of the calling thread until the target thread
@@ -368,7 +356,7 @@ int		pthread_create(pthread_t *thread, const pthread_attr_t *attr,
 		`pthread_join` it will result in undefined behavior.
 	@warning If the caller is canceled, the target thread will not be detached.
  */
-int		pthread_join(pthread_t thread, void **ret_val);
+int			pthread_join(pthread_t thread, void **ret_val);
 
 /**
 	@brief #### Detach the thread.
@@ -385,7 +373,7 @@ int		pthread_join(pthread_t thread, void **ret_val);
 	@warning Multiple calls to `pthread_detach` with the same thread ID will
 		result in undefined behavior.
  */
-int		pthread_detach(pthread_t thread);
+int			pthread_detach(pthread_t thread);
 
 /**
 	@brief #### Create a new mutex.
@@ -400,8 +388,8 @@ int		pthread_detach(pthread_t thread);
 	@note//_RETURN
 	@return 0 on success, otherwise an error number is returned.
  */
-int		pthread_mutex_init(pthread_mutex_t *mutex,
-			const pthread_mutexattr_t *attr);
+int			pthread_mutex_init(pthread_mutex_t *mutex,
+				const pthread_mutexattr_t *attr);
 
 /**
 	@brief #### Destroy the mutex.
@@ -414,7 +402,7 @@ int		pthread_mutex_init(pthread_mutex_t *mutex,
 	@note//_RETURN
 	@return 0 on success, otherwise an error number is returned.
  */
-int		pthread_mutex_destroy(pthread_mutex_t *mutex);
+int			pthread_mutex_destroy(pthread_mutex_t *mutex);
 
 /**
 	@brief #### Lock the mutex.
@@ -431,7 +419,7 @@ int		pthread_mutex_destroy(pthread_mutex_t *mutex);
 	@note//_WARNING
 	@warning warning
  */
-int		pthread_mutex_lock(pthread_mutex_t *mutex);
+int			pthread_mutex_lock(pthread_mutex_t *mutex);
 
 /**
 	@brief #### Unlock the mutex.
@@ -446,7 +434,7 @@ int		pthread_mutex_lock(pthread_mutex_t *mutex);
 	@warning Calling `pthread_mutex_unlock` with a mutex that is not locked by
 		the calling thread will result in undefined behavior.
  */
-int		pthread_mutex_unlock(pthread_mutex_t *mutex);
+int			pthread_mutex_unlock(pthread_mutex_t *mutex);
 
 //_--------------------------------------------------------------------------_//
 
