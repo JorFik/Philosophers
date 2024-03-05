@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:30:15 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/05 19:57:57 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/05 20:26:52 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,22 +40,18 @@ int	print_state(t_phil_schedule *phil, int i, int state)
 
 static void	end_phil(t_phil_schedule *phil, const int i)
 {
-	printf("%d Philosopher %d has finished\n", get_time(phil), i + 1);
 	if (phil && phil->phil_has_fork[i] == i + 1)
 	{
-		printf("%d left its own fork\n", i + 1);
 		pthread_mutex_unlock(&phil->forks[i]);
 		phil->phil_has_fork[i] = 0;
 	}
 	if (phil && i == phil->count - 1 && phil->phil_has_fork[0] == i + 1)
 	{
-		printf("%d left the first fork\n", i + 1);
 		pthread_mutex_unlock(&phil->forks[0]);
 		phil->phil_has_fork[0] = 0;
 	}
 	else
 	{
-		printf("%d left the right fork\n", i + 1);
 		pthread_mutex_unlock(&phil->forks[i + 1]);
 		phil->phil_has_fork[i + 1] = 0;
 	}
@@ -75,10 +71,18 @@ void	*phil_live(void *arg)
 	{
 		if (state == EAT)
 			state += eat_meal(i, phil);
-		if (state == SLEEP && !usleep(phil->sleep_time * 1000))
+		if (state == SLEEP)
+		{
 			state = print_state(phil, i, SLEEP);
-		if (state == THINK && !usleep(phil->eat_time * 1000))
+			if (!phil->someone_died)
+				usleep(phil->sleep_time * 1000);
+		}
+		if (state == THINK)
+		{
 			state = print_state(phil, i, THINK);
+			if (!phil->someone_died)
+				usleep(phil->eat_time * 1000);
+		}
 	}
 	return (end_phil(phil, i), NULL);
 }

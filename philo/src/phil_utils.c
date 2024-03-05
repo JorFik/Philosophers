@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 02:05:22 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/05 19:50:21 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/05 20:06:18 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,18 +59,15 @@ static int	take_forks(const int i, t_phil_schedule *phil, int *can_eat)
 
 static int	leave_forks(const int i, t_phil_schedule *phil)
 {
-	printf("%d %d left its own fork\n", get_time(phil), i + 1);
 	pthread_mutex_unlock(&phil->forks[i]);
 	phil->phil_has_fork[i] = 0;
 	if (i == phil->count - 1)
 	{
-		printf("%d %d left the first fork\n", get_time(phil), i + 1);
 		pthread_mutex_unlock(&phil->forks[0]);
 		phil->phil_has_fork[0] = 0;
 	}
 	else
 	{
-		printf("%d %d left the right fork\n", get_time(phil), i + 1);
 		pthread_mutex_unlock(&phil->forks[i + 1]);
 		phil->phil_has_fork[i + 1] = 0;
 	}

@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 18:17:09 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/03 20:52:48 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/05 20:32:32 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ static int	init_death_timer(t_death_timer *utils,
 
 static void	finish_death_timer(t_death_timer *utils, t_phil_schedule *phil)
 {
-	printf("Philosphers full %d/%d\n", phil->full_phil, phil->count);
 	if (utils->last_meal)
 		free(utils->last_meal);
 	if (utils->times_ate)
@@ -66,7 +65,6 @@ static void	phil_had_a_meal(t_phil_schedule *phil, const int i,
 		if (++utils->times_ate[i] == phil->meal_count)
 		{
 			phil->full_phil++;
-			print_state(phil, i, FULL);
 		}
 	}
 }
@@ -83,13 +81,14 @@ void	*death_timer(void	*arg)
 	i = 0;
 	while (phil->full_phil != phil->meal_count)
 	{
-		now = (useconds_t) get_time(NULL);
+		now = get_time(NULL);
 		phil_had_a_meal(phil, i, &utils, now);
+		if (phil->full_phil == phil->count)
+			phil->someone_died++;
 		if (phil_died(phil, i, now, &utils))
 			return (finish_death_timer(&utils, phil), NULL);
 		if (++i == phil->count)
 			i = 0;
 	}
-	print_state(phil, i, ALL_FULL);
 	return (finish_death_timer(&utils, phil), NULL);
 }
