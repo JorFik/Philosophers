@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 18:17:09 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 07:24:27 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/03 20:52:48 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,13 @@ static int	init_death_timer(t_death_timer *utils,
 
 static void	finish_death_timer(t_death_timer *utils, t_phil_schedule *phil)
 {
+	printf("Philosphers full %d/%d\n", phil->full_phil, phil->count);
 	if (utils->last_meal)
 		free(utils->last_meal);
 	if (utils->times_ate)
 		free(utils->times_ate);
 	memset(utils, 0, sizeof(t_death_timer));
+	phil->someone_died = 1;
 }
 
 static int	phil_died(t_phil_schedule *phil, const int i, useconds_t now,

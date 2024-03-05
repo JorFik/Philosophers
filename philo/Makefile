@@ -6,25 +6,9 @@
 #    By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/18 21:01:31 by JFikents          #+#    #+#              #
-#    Updated: 2024/02/29 02:28:49 by JFikents         ###   ########.fr        #
+#    Updated: 2024/03/03 17:24:44 by JFikents         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
-# * ---------------------- AVOID CHANGES IN THIS AREA ---------------------- * #
-LIB = ar rcs
-RM = rm -rf
-CC = cc
-CALLMAKE = make -C
-OBJ = $(addprefix $(SRC_DIR), $(C_FILES:.c=.o))
-OBJ+ = $(addprefix $(SRC_DIR), $(BONUS_FILES:.c=.o))
-SRC = $(addprefix $(SRC_DIR), $(C_FILES))
-CFLAGS = -Wall -Wextra -Werror -Wunreachable-code
-INCLUDES = $(addprefix -I, $(HEADERS_DIR))
-DEBUG_FLAGS = -fsanitize=address -g3
-LDFLAGS = $(patsubst %, -L%/, $(LIBRARIES_DIR))\
-$(patsubst lib%,-l%,$(LIBRARIES_DIR))
-default_target: all
-#_----------------------------------------------------------------------------_#
 
 # ? -------------------------- DO YOU HAVE BONUS? -------------------------- ? #
 # If you have bonus, change the value of the variable BONUS to 1 and add the
@@ -84,6 +68,20 @@ C_FILES = main.c utils.c debug_utils.c errors.c phil_live.c death_timer.c \
 # SRC_DIR
 SRC +=
 
+# * ---------------------- AVOID CHANGES IN THIS AREA ---------------------- * #
+LIB := ar rcs
+RM := rm -rf
+CC := cc
+CALLMAKE := make -C
+OBJ+ = $(addprefix $(SRC_DIR), $(BONUS_FILES:%.c=%.o))
+OBJ = $(addprefix $(SRC_DIR), $(C_FILES:%.c=%.o))
+SRC = $(addprefix $(SRC_DIR), $(C_FILES))
+CFLAGS = -Wall -Wextra -Werror -Wunreachable-code
+INCLUDES = $(addprefix -I, $(HEADERS_DIR))
+DEBUG_FLAGS = -fsanitize=address -g3
+LDFLAGS = $(patsubst %, -L%/, $(LIBRARIES_DIR))\
+$(patsubst lib%,-l%,$(LIBRARIES_DIR))
+default_target: all
 #_----------------------------------------------------------------------------_#
 
 # * ----------------------------- DEBUG AREA ------------------------------ * #
@@ -138,6 +136,9 @@ trun : a_files
 # * ----------------------------- EXTRA RULES ----------------------------- * #
 
 # Here you can add extra rules to compile your program
+donde_estoy:
+	@echo "\tAqui estoy"
+.PHONY: donde_estoy
 
 #_----------------------------------------------------------------------------_#
 
@@ -161,12 +162,14 @@ endif
 
 ifeq ($(PROGRAM), 1)
 $(NAME) : a_files $(OBJ)
-	@echo "	Compiling $@..."
+	@echo "\tCompiling $@..."
 	@$(CC) -o $@ $(OBJ) $(CFLAGS) $(INCLUDES) $(LDFLAGS)
+	@echo "\t$@ is ready"
 else
 $(NAME) : a_files $(OBJ)
-	@echo "	Compiling $(NAME)..."
-	@$(LIB) $(NAME) $(OBJ) $(INCLUDES) $(LDFLAGS)
+	@echo "\tCompiling $@..."
+	@$(LIB) $@ $(OBJ) $(INCLUDES) $(LDFLAGS)
+	@echo "\t$@ is ready"
 endif
 
 ifeq ($(LIBRARIES_DIR), )

@@ -6,13 +6,13 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 12:03:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/02/29 09:59:22 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/03 20:17:32 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-int	finish_simulation(t_phil_schedule *phil)
+int	finish_simulation(t_phil_schedule *phil, int *original_can_eat)
 {
 	extern int	errno;
 	int			i;
@@ -30,20 +30,21 @@ int	finish_simulation(t_phil_schedule *phil)
 		free(phil->forks);
 	if (phil->phil_has_fork)
 		free(phil->phil_has_fork);
-	if (phil->can_eat)
-		free(phil->can_eat);
+	if (original_can_eat)
+		free(original_can_eat);
 	memset(phil, 0, sizeof(t_phil_schedule));
+	printf("\t\t\t\t\t\tSimulation finished\n");
 	if (errno)
 		return (errno);
 	return (0);
 }
 
-int	get_time(t_phil_schedule *phil)
+useconds_t	get_time(t_phil_schedule *phil)
 {
-	struct timeval	time;
-	useconds_t		time_stamp;
-	useconds_t		now;
-	int				check;
+	static useconds_t		now;
+	struct timeval			time;
+	useconds_t				time_stamp;
+	int						check;
 
 	check = gettimeofday(&time, NULL);
 	if (error((int [3]){check, GET_TIME, TIME_STAMP}, NULL))
