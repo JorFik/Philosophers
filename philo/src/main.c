@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/03 21:09:26 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/05 21:03:27 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,8 @@ static int	initilize_philos(t_phil_schedule *phil, int argc, char **argv)
 	phil->phil_has_fork = ft_calloc(phil->count + 1, sizeof(int));
 	if (error((int [3]){IF_NULL, FLAG_FORK, INIT_PHIL}, phil->phil_has_fork))
 		return (1);
-	phil->can_eat = ft_calloc(phil->count + 1, sizeof(int));
-	if (error((int [3]){IF_NULL, CAN_EAT, INIT_PHIL}, phil->can_eat))
+	phil->eat_order = ft_calloc(phil->count + 1, sizeof(int));
+	if (error((int [3]){IF_NULL, CAN_EAT, INIT_PHIL}, phil->eat_order))
 		return (1);
 	return (0);
 }
@@ -69,9 +69,9 @@ int	main(int argc, char **argv)
 {
 	t_phil_schedule	phil[1];
 	int				i;
-	int				*original_can_eat;
+	int				*original_order;
 
-	original_can_eat = NULL;
+	original_order = NULL;
 	if (argc < 5)
 		return (error((int [3]){-1, LESS_ARGS, ARGS}, NULL));
 	if (argc > 6)
@@ -79,8 +79,8 @@ int	main(int argc, char **argv)
 	if (ft_atoi(argv[1]) < 1)
 		return (error((int [3]){-1, NO_PHIL, SIMULATION}, NULL));
 	if (initilize_philos(phil, argc, argv))
-		return (finish_simulation((t_phil_schedule *)phil, original_can_eat));
-	original_can_eat = phil->can_eat;
+		return (finish_simulation((t_phil_schedule *)phil, original_order));
+	original_order = phil->eat_order;
 	simulation(phil, &i);
 	i = 0;
 	while (i < phil->count)
@@ -88,5 +88,5 @@ int	main(int argc, char **argv)
 		pthread_join(phil->philosopher[i], NULL);
 		i++;
 	}
-	return (finish_simulation((t_phil_schedule *)phil, original_can_eat));
+	return (finish_simulation((t_phil_schedule *)phil, original_order));
 }

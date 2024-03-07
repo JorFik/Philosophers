@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/05 20:18:28 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/07 13:20:40 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ enum e_printed_stamps
 	ALL_FULL,
 };
 
+enum e_eating
+{
+	STARVING = -1,
+	HUNGRY = 0,
+	IS_EATING,
+};
+
 //_--------------------------------------------------------------------------_//
 
 // ** ------------------------- DATA STRUCTURES ------------------------- ** //
@@ -58,7 +65,7 @@ typedef struct s_phil_schedule
 	int				someone_died;
 	int				*phil_has_fork;
 	int				*ate;
-	int				*can_eat;
+	int				*eat_order;
 	pthread_t		*philosopher;
 	pthread_t		death_timer[1];
 	useconds_t		sleep_time;
@@ -85,6 +92,20 @@ typedef struct s_death_timer
 //_--------------------------------------------------------------------------_//
 
 // ** ---------------------------- FUNCTIONS ---------------------------- ** //
+
+/**
+	@note//_DESCRIPTION
+	@brief #### Usleep but stops
+	@brief Same as `usleep` but it stops if the philosopher has died or is
+		starving.
+	@note//_PARAMETERS
+	@param time Time to sleep in microseconds.
+	@param phil The philosophers structure.
+	@param index the index of the philosopher.
+	@note//_RETURNS
+	@return 1 if it has stopped, otherwise 0.
+ */
+int			ft_usleep(useconds_t time, t_phil_schedule *phil, const int index);
 
 /**
 	@brief #### Takes a meal.
