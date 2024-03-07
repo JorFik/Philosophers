@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 18:17:09 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/05 20:32:32 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/07 13:20:49 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,21 +46,27 @@ static void	finish_death_timer(t_death_timer *utils, t_phil_schedule *phil)
 static int	phil_died(t_phil_schedule *phil, const int i, useconds_t now,
 	t_death_timer *utils)
 {
+	if (phil->ate[i] == IS_EATING)
+		return (0);
 	if (phil && now - utils->last_meal[i] >= phil->die_time)
 	{
+		pthread_mutex_lock(phil->take_forks);
 		phil->someone_died++;
 		print_state(phil, i, DEATH);
+		pthread_mutex_unlock(phil->take_forks);
 		return (1);
 	}
+	else if (!phil->count % 2 && phil->ate[i] == HUNGRY)
+		phil->ate[i] = STARVING;
 	return (0);
 }
 
 static void	phil_had_a_meal(t_phil_schedule *phil, const int i,
 	t_death_timer *utils, useconds_t now)
 {
-	if (phil && phil->ate[i] == 1)
+	if (phil && phil->ate[i] == IS_EATING)
 	{
-		phil->ate[i] = 0;
+		phil->ate[i] = HUNGRY;
 		utils->last_meal[i] = now;
 		if (++utils->times_ate[i] == phil->meal_count)
 		{
@@ -79,7 +85,7 @@ void	*death_timer(void	*arg)
 	if (init_death_timer(&utils, &phil, arg))
 		return (finish_death_timer(&utils, phil), NULL);
 	i = 0;
-	while (phil->full_phil != phil->meal_count)
+	while (phil->full_phil != phil->count)
 	{
 		now = get_time(NULL);
 		phil_had_a_meal(phil, i, &utils, now);

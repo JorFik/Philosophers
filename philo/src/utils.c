@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 12:03:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/05 20:08:47 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/07 13:10:07 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	finish_simulation(t_phil_schedule *phil, int *original_can_eat)
 		free(original_can_eat);
 	memset(phil, 0, sizeof(t_phil_schedule));
 	printf("\t\t\t\tSimulation finished\n");
-	if (errno)
+	if (errno && errno != 60)
 		return (errno);
 	return (0);
 }
@@ -88,4 +88,20 @@ int	ft_atoi(char *str)
 		new_n_shiny_usable_int += (int)str[i++] - 48;
 	}
 	return (new_n_shiny_usable_int * sign);
+}
+
+int	ft_usleep(useconds_t time, t_phil_schedule *phil, const int index)
+{
+	useconds_t	start;
+
+	start = 0;
+	while (start < time && !phil->someone_died)
+	{
+		usleep(500);
+		// start += 621;
+		start += 500;
+	}
+	if (phil->ate[index] == STARVING || phil->someone_died)
+		return (1);
+	return (0);
 }
