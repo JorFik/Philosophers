@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 12:03:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/11 17:51:16 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/11 18:52:18 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,13 @@ int	ft_atoi(char *str)
 	return (new_n_shiny_usable_int * sign);
 }
 
-int	ft_usleep(useconds_t time, t_phil_schedule *phil, const int index)
+int	ft_usleep(useconds_t time, t_phil_schedule *phil)
 {
-	useconds_t	start;
 	long long	adjustment;
 
-	start = 0;
 	adjustment = get_time(phil);
 	adjustment = 50 - (adjustment % 50);
-	ft_stop_watch(phil, index, STOP);
 	adjustment = adjustment * 1000;
-	ft_stop_watch(phil, index, START);
 	adjustment += time - 50000;
 	usleep(adjustment);
 	if (phil->someone_died)
@@ -81,20 +77,28 @@ int	ft_usleep(useconds_t time, t_phil_schedule *phil, const int index)
 	return (0);
 }
 
-int	ft_stop_watch(t_phil_schedule *phil, const int i, int restart)
+int	print_state(t_phil_schedule *phil, int i, int state)
 {
-	struct timeval	time;
+	int	time;
 
-	if (restart == START)
-	{
-		gettimeofday(&time, NULL);
-		phil->stop_watch[i] = (time.tv_usec) + (time.tv_sec * 1000000);
-		return (1);
-	}
-	else
-	{
-		gettimeofday(&time, NULL);
-		phil->stop_watch[i] -= (time.tv_usec) + (time.tv_sec * 1000000);
-	}
-	return (0);
+	pthread_mutex_lock(phil->print);
+	time = get_time(phil);
+	if (!phil->someone_died && state == THINK && phil->full_phil != phil->count)
+		printf("%d %d is thinking\n", time, i + 1);
+	if (!phil->someone_died && state == EAT && phil->full_phil != phil->count)
+		printf("%d %d is eating\n", time, i + 1);
+	if (!phil->someone_died && state == SLEEP && phil->full_phil != phil->count)
+		printf("%d %d is sleeping\n", time, i + 1);
+	if (!phil->someone_died && state == FORK && phil->full_phil != phil->count)
+		printf("%d %d has taken a fork\n", time, i + 1);
+	if (state == DEATH && phil->full_phil != phil->count)
+		printf("%d %d died\n", time, i + 1);
+	if (!phil->someone_died && state == FULL && phil->full_phil != phil->count)
+		printf("%d %d is full\n", time, i + 1);
+	if (!phil->someone_died && state == ALL_FULL)
+		printf("%d All philosophers are full\n", time);
+	pthread_mutex_unlock(phil->print);
+	if (state == SLEEP)
+		return (THINK);
+	return (++state);
 }
