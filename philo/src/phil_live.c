@@ -6,37 +6,11 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:30:15 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/07 13:14:13 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:50:51 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-int	print_state(t_phil_schedule *phil, int i, int state)
-{
-	int	time;
-
-	time = get_time(phil);
-	pthread_mutex_lock(phil->print);
-	if (!phil->someone_died && state == THINK && phil->full_phil != phil->count)
-		printf("%d %d is thinking\n", time, i + 1);
-	if (!phil->someone_died && state == EAT && phil->full_phil != phil->count)
-		printf("%d %d is eating\n", time, i + 1);
-	if (!phil->someone_died && state == SLEEP && phil->full_phil != phil->count)
-		printf("%d %d is sleeping\n", time, i + 1);
-	if (!phil->someone_died && state == FORK && phil->full_phil != phil->count)
-		printf("%d %d has taken a fork\n", time, i + 1);
-	if (state == DEATH && phil->full_phil != phil->count)
-		printf("%d %d died\n", time, i + 1);
-	if (!phil->someone_died && state == FULL && phil->full_phil != phil->count)
-		printf("%d %d is full\n", time, i + 1);
-	if (!phil->someone_died && state == ALL_FULL)
-		printf("%d All philosophers are full\n", time);
-	pthread_mutex_unlock(phil->print);
-	if (state == SLEEP)
-		return (THINK);
-	return (++state);
-}
 
 static void	end_phil(t_phil_schedule *phil, const int i)
 {
@@ -63,13 +37,13 @@ void	*phil_live(void *arg)
 	const int		i = ((t_phil_args *)arg)->i;
 	int				state;
 
-	state = EAT;
 	phil = ((t_phil_args *)arg)->phil;
+	state = EAT;
 	if (i % 2)
-		usleep(50 + (phil->eat_time * 1000));
+		ft_usleep(50 + (phil->eat_time * 1000), phil, i);
 	while (phil && !phil->someone_died)
 	{
-		if (state == EAT || phil->ate[i] == STARVING)
+		if (state == EAT)
 			state += eat_meal(i, phil);
 		if (state == SLEEP)
 		{
@@ -80,7 +54,7 @@ void	*phil_live(void *arg)
 		{
 			state = print_state(phil, i, THINK);
 			if (phil->count % 2)
-				ft_usleep(phil->eat_time * 500, phil, i);
+				ft_usleep(phil->eat_time * 900, phil, i);
 		}
 	}
 	return (end_phil(phil, i), NULL);

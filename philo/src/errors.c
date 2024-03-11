@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 18:51:01 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/01 18:38:46 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/08 14:47:34 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ static char	*get_where(int where)
 		return ("at init death timer.");
 	if (where == START_SIM)
 		return ("before starting simulation.");
+	if (where == STOPWATCH)
+		return ("when trying to use stop watch.");
 	return ("at unknown location.");
 }
 

@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 18:17:09 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/07 13:20:49 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:26:28 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,14 @@ static int	init_death_timer(t_death_timer *utils,
 	philo = *phil;
 	memset(utils, 0, sizeof(t_death_timer));
 	utils->last_meal = ft_calloc(philo->count, sizeof(useconds_t));
-	if (error((int [3]){IF_NULL, ALLOC_DEATH, DEATH_T}, philo->death_timer))
+	utils->times_ate = ft_calloc(philo->count, sizeof(int));
+	if (error((int [3]){IF_NULL, ALLOC_DEATH, DEATH_T}, utils->last_meal)
+		|| error((int [3]){IF_NULL, ALLOC_DEATH, DEATH_T}, utils->times_ate))
 		return (1);
 	while (++i < philo->count)
+	{
 		utils->last_meal[i] = (useconds_t) get_time(NULL);
-	utils->times_ate = ft_calloc(philo->count, sizeof(int));
-	if (error((int [3]){IF_NULL, ALLOC_DEATH, DEATH_T}, utils->times_ate))
-		return (1);
+	}
 	return (0);
 }
 
@@ -50,14 +51,12 @@ static int	phil_died(t_phil_schedule *phil, const int i, useconds_t now,
 		return (0);
 	if (phil && now - utils->last_meal[i] >= phil->die_time)
 	{
-		pthread_mutex_lock(phil->take_forks);
+		pthread_mutex_lock(&phil->forks[i]);
 		phil->someone_died++;
 		print_state(phil, i, DEATH);
-		pthread_mutex_unlock(phil->take_forks);
+		pthread_mutex_unlock(&phil->forks[i]);
 		return (1);
 	}
-	else if (!phil->count % 2 && phil->ate[i] == HUNGRY)
-		phil->ate[i] = STARVING;
 	return (0);
 }
 
