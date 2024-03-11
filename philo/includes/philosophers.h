@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/11 17:50:39 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/11 19:10:53 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,6 @@
 
 // ** ------------------------- MACROS AND ENUMS ------------------------- ** //
 
-enum e_stop_watch
-{
-	STOP,
-	START,
-};
-
 enum e_printed_stamps
 {
 	DEATH,
@@ -46,7 +40,6 @@ enum e_printed_stamps
 
 enum e_eating
 {
-	STARVING = -1,
 	HUNGRY = 0,
 	IS_EATING,
 };
@@ -55,6 +48,33 @@ enum e_eating
 
 // ** ------------------------- DATA STRUCTURES ------------------------- ** //
 
+/**
+	@note//_DESCRIPTION
+	@brief #### The main structure for the philosophers.
+	@brief The main structure for the philosophers, containing all the resources
+		needed for the simulation and some extra information to facilitate the
+		communication between the threads and the debug processes.
+	@note//_PARAMETERS
+	@param count The number of philosophers.
+	@param meal_count The number of meals each philosopher has to eat.
+	@param full_phil The number of philosophers that have eaten the required
+		number of meals.
+	@param someone_died A flag to indicate if a philosopher has died.
+	@param phil_has_fork An array to keep track of which philosopher has which
+		fork.
+	@param ate An array to keep track of which philosopher is eating.
+	@param philosopher An array of threads for the philosophers.
+	@param sleep_time The time the philosopher has to sleep.
+	@param eat_time The time the philosopher has to eat.
+	@param die_time The time the philosopher has to eat before dying.
+	@param start_time The time the simulation started.
+	@param forks An array of mutexes for the forks.
+	@param print A mutex to make sure that the output is not interrupted by other
+		threads.
+	@note//_NOTES
+	@note `meal_count` is set to -1 if the philosophers don't have to eat a specific
+		number of meals.
+ */
 typedef struct s_phil_schedule
 {
 	int				count;
@@ -64,7 +84,6 @@ typedef struct s_phil_schedule
 	int				*phil_has_fork;
 	int				*ate;
 	pthread_t		*philosopher;
-	long long		*stop_watch;
 	useconds_t		sleep_time;
 	useconds_t		eat_time;
 	useconds_t		die_time;
@@ -73,12 +92,34 @@ typedef struct s_phil_schedule
 	pthread_mutex_t	print[1];
 }				t_phil_schedule;
 
+/**
+	@note//_DESCRIPTION
+	@brief #### The structure containing all information for the philosopher
+		threads.
+	@brief The structure containing the index of the philosopher and the
+		philosophers structure.
+	@note//_PARAMETERS
+	@param i The index of the philosopher.
+	@param phil The philosophers structure.
+ */
 typedef struct s_phil_args
 {
 	int				i;
 	t_phil_schedule	*phil;
 }				t_phil_args;
 
+/**
+	@note//_DESCRIPTION
+	@brief #### The structure for the death timer.
+	@brief A structure containing all the tools necessary to keep track of the
+		time and check if a philosopher has died or if the simulation has to
+		stop.
+	@note//_PARAMETERS
+	@param times_ate An array to keep track of how many times each philosopher
+		has eaten.
+	@param last_meal An array to keep track of the last time each philosopher
+		ate.
+ */
 typedef struct s_death_timer
 {
 	int				*times_ate;
@@ -91,31 +132,19 @@ typedef struct s_death_timer
 
 /**
 	@note//_DESCRIPTION
-	@brief #### Keep track of the adjustment needed for ft_usleep.
-	@brief Keeps track of the time that passed between tasks and returns the
-		adjustment needed for `ft_usleep` so the tasks takes the right amount of
-		time.
-	@note//_PARAMETERS
-	@param phil the philosophers structure.
-	@param i the index of the philosopher.
-	@param restart Tells the function to restart the timer.
-	@note//_RETURNS
-	@return 1 if the stop watch has started, 0 if it has stopped.
- */
-int			ft_stop_watch(t_phil_schedule *phil, const int i, int restart);
-
-/**
-	@note//_DESCRIPTION
-	@brief #### Usleep but stops
-	@brief Same as `usleep` but it stops if the philosopher has died.
+	@brief #### Usleep but with adjustments.
+	@brief Same as `usleep` but it adjust the waiting time to not have a
+		extra time to wait, and try to keep the time as accurate as possible.
 	@note//_PARAMETERS
 	@param time Time to sleep in microseconds.
 	@param phil The philosophers structure.
-	@param index the index of the philosopher.
 	@note//_RETURNS
 	@return 1 if it has stopped, otherwise 0.
+	@note//_NOTES
+	@note It adjust the time to be a multiple of 50000 microseconds or 50
+		milliseconds.
  */
-int			ft_usleep(useconds_t time, t_phil_schedule *phil, const int index);
+int			ft_usleep(useconds_t time, t_phil_schedule *phil);
 
 /**
 	@note//_DESCRIPTION
@@ -125,7 +154,13 @@ int			ft_usleep(useconds_t time, t_phil_schedule *phil, const int index);
 	@param i The index of the philosopher.
 	@param phil The philosophers structure.
 	@note//_NOTES
-	@note It communicates with `phil_ate`.
+	@note It communicates through `phil_ate` and `phil_has_fork`.
+	@note It uses the `forks` mutex to make sure that the forks are not taken by
+		another philosopher.
+	@note It uses the `phil_has_fork` array to keep track of which philosopher
+		has which fork.
+	@note It sets `ate` to `IS_EATING` as soon as the philosopher has taken the
+		both fork.
 	@note//_RETURN
 	@return 1 if the philosopher has eaten, otherwise 0.
  */
@@ -144,8 +179,8 @@ int			eat_meal(const int i, t_phil_schedule *phil);
 	@note//_NOTES
 	@note It uses the `print` mutex to make sure that the output is not
 		interrupted by other threads.
-	@note For more information about the states see `enum e_printed_stamps` and
-		The function itself to see all printable states.
+	@note For more information, see `enum e_printed_stamps` and the
+		function itself to see all printable states.
 	@note//_RETURN
 	@return The state of the philosopher.
  */
@@ -165,28 +200,14 @@ int			print_state(t_phil_schedule *phil, int i, int state);
  */
 useconds_t	get_time(t_phil_schedule *phil);
 
-// /**
-// 	@note//_DESCRIPTION
-// 	@brief #### Returns all the resources to the system.
-// 	@brief Frees, detaches and destroys all the allocated memory, threads and
-// 		mutexes.
-// 	@note//_PARAMETERS
-// 	@param phil The philosophers structure containing all the resources.
-// 	@note//_RETURN
-// 	@return 0 if no error, otherwise the error number.
-// 	@note//_NOTES
-// 	@note Due to one of the libraries not being up to date, the error number
-// 		`60` is ignored.
-//  */
-// int			finish_simulation(t_phil_schedule *phil);
-
 /**
 	@note//_DESCRIPTION
-	@brief #### Keep track of the time and check if a philosopher has died.
+	@brief #### Keep track of the time and tells the program when to stop.
 	@brief Has a timer for each philosopher and checks if a philosopher has died
-		or not, if someone has died, it will tell the program to stop.
+		or if the philosophers had enough meals, if so, it will tell the program
+		to stop
 	@note//_PARAMETERS
-	@param arg The structure containing the philosophers structure.
+	@param phil The philosophers structure containing all the resources.
 	@note//_NOTES
 	@note If a philosopher hasn't eaten for `phil->die_time` milliseconds, he
 		will die.
@@ -196,18 +217,19 @@ useconds_t	get_time(t_phil_schedule *phil);
 	@note It communicates with the other threads through `phil_ate` and
 		`someone_died`.
  */
-void		*death_timer(void	*arg);
+void		*death_timer(t_phil_schedule *phil);
 
 /**
 	@note//_DESCRIPTION
 	@brief #### Start function for philosophers.
-	@brief The scheduler function for philosophers.
+	@brief This function simulates the life of a philosopher, it makes the
+		philosopher think, eat and sleep.
 	@note//_PARAMETERS
 	@param arg The structure containing the philosopher's index and the
 		philosophers structure.
 	@note//_NOTES
 	@note It communicates with `death_timer` and other `philosophers` through
-		`phil_ate` and `phil_has_fork`.
+		`phil_ate`, `phil_has_fork` and `someone_died`.
  */
 void		*phil_live(void *arg);
 

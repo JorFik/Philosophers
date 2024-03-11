@@ -6,12 +6,22 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/09 07:58:39 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/11 18:59:43 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
+/**
+	@note//_DESCRIPTION
+	@brief #### Starts the simulation.
+	@brief Initializes the forks and the print mutex, and starts the threads
+		for the philosophers, setting the starting time as well as the 
+		`death timer` function.
+	@note//_PARAMETERS
+	@param phil The philosophers structure containing all the resources.
+	@param i The index of the philosopher.
+ */
 static void	simulation(t_phil_schedule *phil, int *i)
 {
 	t_phil_args	args[1];
@@ -30,13 +40,24 @@ static void	simulation(t_phil_schedule *phil, int *i)
 	while (++(*i) < phil->count)
 	{
 		args->i = (*i);
-		ft_stop_watch(phil, (*i), START);
 		pthread_create(&phil->philosopher[(*i)], NULL, &phil_live, args);
 		usleep(50);
 	}
 	death_timer(phil);
 }
 
+/**
+	@note//_DESCRIPTION
+	@brief #### Initializes the `phil` structure.
+	@brief Allocates memory for the `phil` structure and its members, and
+		initializes the members with the values from the command line arguments.
+	@note//_PARAMETERS
+	@param phil the philosophers structure to be initialized.
+	@param argc the number of command line arguments.
+	@param argv the command line arguments.
+	@note//_RETURNS
+	@return 0 if no error, otherwise 1.
+ */
 static int	initilize_philos(t_phil_schedule *phil, int argc, char **argv)
 {
 	memset(phil, 0, sizeof(t_phil_schedule));
@@ -51,16 +72,27 @@ static int	initilize_philos(t_phil_schedule *phil, int argc, char **argv)
 	phil->ate = ft_calloc(phil->count, sizeof(int));
 	phil->forks = ft_calloc(phil->count, sizeof(pthread_mutex_t));
 	phil->phil_has_fork = ft_calloc(phil->count + 1, sizeof(int));
-	phil->stop_watch = ft_calloc(phil->count + 1, sizeof(long long));
 	if (error((int [3]){IF_NULL, ALLOC_PHIL, INIT_PHIL}, phil->philosopher)
 		|| error((int [3]){IF_NULL, FLAG_ATE, INIT_PHIL}, phil->ate)
 		|| error((int [3]){IF_NULL, ALLOC_FORKS, INIT_PHIL}, phil->forks)
-		|| error((int [3]){IF_NULL, FLAG_FORK, INIT_PHIL}, phil->phil_has_fork)
-		|| error((int [3]){IF_NULL, CAN_EAT, INIT_PHIL}, phil->stop_watch))
+		|| error((int [3]){IF_NULL, FLAG_FORK, INIT_PHIL}, phil->phil_has_fork))
 		return (1);
 	return (0);
 }
 
+/**
+	@note//_DESCRIPTION
+	@brief #### Returns all the resources to the system.
+	@brief Frees, detaches and destroys all the allocated memory, threads and
+		mutexes.
+	@note//_PARAMETERS
+	@param phil The philosophers structure containing all the resources.
+	@note//_RETURN
+	@return 0 if no error, otherwise the error number.
+	@note//_NOTES
+	@note Due to one of the libraries not being up to date, the error number
+		`60` is ignored.
+ */
 static int	finish_simulation(t_phil_schedule *phil)
 {
 	extern int	errno;
@@ -78,8 +110,6 @@ static int	finish_simulation(t_phil_schedule *phil)
 		free(phil->forks);
 	if (phil->phil_has_fork)
 		free(phil->phil_has_fork);
-	if (phil->stop_watch)
-		free(phil->stop_watch);
 	memset(phil, 0, sizeof(t_phil_schedule));
 	printf("\t\t\t\tSimulation finished\n");
 	if (errno && errno != 60)
