@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/07 13:20:40 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:50:39 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,11 @@
 
 // ** ------------------------- MACROS AND ENUMS ------------------------- ** //
 
-# ifndef TRUE
-#  define TRUE 1
-# endif
-
-# ifndef FALSE
-#  define FALSE 0
-# endif
+enum e_stop_watch
+{
+	STOP,
+	START,
+};
 
 enum e_printed_stamps
 {
@@ -65,15 +63,13 @@ typedef struct s_phil_schedule
 	int				someone_died;
 	int				*phil_has_fork;
 	int				*ate;
-	int				*eat_order;
 	pthread_t		*philosopher;
-	pthread_t		death_timer[1];
+	long long		*stop_watch;
 	useconds_t		sleep_time;
 	useconds_t		eat_time;
 	useconds_t		die_time;
 	useconds_t		start_time;
 	pthread_mutex_t	*forks;
-	pthread_mutex_t	take_forks[1];
 	pthread_mutex_t	print[1];
 }				t_phil_schedule;
 
@@ -95,9 +91,23 @@ typedef struct s_death_timer
 
 /**
 	@note//_DESCRIPTION
+	@brief #### Keep track of the adjustment needed for ft_usleep.
+	@brief Keeps track of the time that passed between tasks and returns the
+		adjustment needed for `ft_usleep` so the tasks takes the right amount of
+		time.
+	@note//_PARAMETERS
+	@param phil the philosophers structure.
+	@param i the index of the philosopher.
+	@param restart Tells the function to restart the timer.
+	@note//_RETURNS
+	@return 1 if the stop watch has started, 0 if it has stopped.
+ */
+int			ft_stop_watch(t_phil_schedule *phil, const int i, int restart);
+
+/**
+	@note//_DESCRIPTION
 	@brief #### Usleep but stops
-	@brief Same as `usleep` but it stops if the philosopher has died or is
-		starving.
+	@brief Same as `usleep` but it stops if the philosopher has died.
 	@note//_PARAMETERS
 	@param time Time to sleep in microseconds.
 	@param phil The philosophers structure.
@@ -108,27 +118,25 @@ typedef struct s_death_timer
 int			ft_usleep(useconds_t time, t_phil_schedule *phil, const int index);
 
 /**
-	@brief #### Takes a meal.
 	@note//_DESCRIPTION
-	@brief Takes both forks and eats a meal, while also keeping track of the
-		who needs to eat and who has eaten.
+	@brief #### Takes a meal.
+	@brief Takes both forks and eats a meal.
 	@note//_PARAMETERS
 	@param i The index of the philosopher.
 	@param phil The philosophers structure.
 	@note//_NOTES
-	@note It does nothing if the philosopher has already eaten.
-	@note It communicates with `phil_has_fork`, `phil_ate` and `meal_count`.
-	@note It doesn't unlock the forks, it is done in the `take_nap` function.
+	@note It communicates with `phil_ate`.
 	@note//_RETURN
 	@return 1 if the philosopher has eaten, otherwise 0.
  */
 int			eat_meal(const int i, t_phil_schedule *phil);
 
 /**
-	@brief #### Print the state of a philosopher.
 	@note//_DESCRIPTION
+	@brief #### Print the state of a philosopher.
 	@brief Prints the time stamp, the philosopher's index and the state of the
 		philosopher and makes sure that the output is not interrupted by other
+		threads.
 	@note//_PARAMETERS
 	@param phil The philosophers structure.
 	@param i The index of the philosopher.
@@ -136,6 +144,8 @@ int			eat_meal(const int i, t_phil_schedule *phil);
 	@note//_NOTES
 	@note It uses the `print` mutex to make sure that the output is not
 		interrupted by other threads.
+	@note For more information about the states see `enum e_printed_stamps` and
+		The function itself to see all printable states.
 	@note//_RETURN
 	@return The state of the philosopher.
  */
@@ -151,58 +161,59 @@ int			print_state(t_phil_schedule *phil, int i, int state);
 	@note//_RETURN
 	@return The time stamp in milliseconds.
 	@note//_NOTES
-	@note If `phil` is `NULL`, it will return the current time.
+	@note If `phil` is `NULL`, it will return the current time in milliseconds.
  */
 useconds_t	get_time(t_phil_schedule *phil);
 
-/**
-	@brief #### Returns all the resources to the system.
-	@note//_DESCRIPTION
-	@brief Frees, detaches and destroys all the allocated memory, threads and
-		mutexes.
-	@note//_PARAMETERS
-	@param phil The philosophers structure containing all the resources.
-	@param original_can_eat The original address of `can_eat` array.
-	@note//_RETURN
-	@return 0 if no error, otherwise the error number.
- */
-int			finish_simulation(t_phil_schedule *phil, int *original_can_eat);
+// /**
+// 	@note//_DESCRIPTION
+// 	@brief #### Returns all the resources to the system.
+// 	@brief Frees, detaches and destroys all the allocated memory, threads and
+// 		mutexes.
+// 	@note//_PARAMETERS
+// 	@param phil The philosophers structure containing all the resources.
+// 	@note//_RETURN
+// 	@return 0 if no error, otherwise the error number.
+// 	@note//_NOTES
+// 	@note Due to one of the libraries not being up to date, the error number
+// 		`60` is ignored.
+//  */
+// int			finish_simulation(t_phil_schedule *phil);
 
 /**
-	@brief #### Keep track of the time and check if a philosopher has died.
 	@note//_DESCRIPTION
+	@brief #### Keep track of the time and check if a philosopher has died.
 	@brief Has a timer for each philosopher and checks if a philosopher has died
 		or not, if someone has died, it will tell the program to stop.
 	@note//_PARAMETERS
-	@param arg The structure containing the philosopher's index and the
-		philosophers structure.
+	@param arg The structure containing the philosophers structure.
 	@note//_NOTES
 	@note If a philosopher hasn't eaten for `phil->die_time` milliseconds, he
 		will die.
 	@note It restarts the timer if the philosopher has eaten.
 	@note If a philosopher dies, it will print the time stamp and who died, then
 		it will tell the program to stop.
-	@note It communicates with `even_phil`, `odd_phil` and the main thread
-		through `phil_ate` and `someone_died`.
+	@note It communicates with the other threads through `phil_ate` and
+		`someone_died`.
  */
 void		*death_timer(void	*arg);
 
 /**
-	@brief #### Start function for the odd philosophers.
 	@note//_DESCRIPTION
-	@brief The scheduler function for the odd philosophers.
+	@brief #### Start function for philosophers.
+	@brief The scheduler function for philosophers.
 	@note//_PARAMETERS
 	@param arg The structure containing the philosopher's index and the
 		philosophers structure.
 	@note//_NOTES
-	@note It communicates with `death_timer`, other `philosophers` and the main
-		thread through `phil_ate`, `is_fork_free` and `meal_count`.
+	@note It communicates with `death_timer` and other `philosophers` through
+		`phil_ate` and `phil_has_fork`.
  */
 void		*phil_live(void *arg);
 
 /**
-	@brief #### Print an error message and return an error number.
 	@note//_DESCRIPTION
+	@brief #### Print an error message and return an error number.
 	@brief Prints an error message, sets `errno` to `check[ERROR]` and returns
 		the error number if an error occurs, otherwise it does nothing and
 		returns 0.
@@ -220,8 +231,8 @@ void		*phil_live(void *arg);
 int			error(int check[3], void *if_null);
 
 /**
-	@brief #### Allocate memory and set it to zero.
 	@note//_DESCRIPTION
+	@brief #### Allocate memory and sets it to zero.
 	@brief Allocates memory for an array of count elements of size bytes each
 	and sets the memory to zero.
 	@note//_PARAMETERS
@@ -236,8 +247,8 @@ int			error(int check[3], void *if_null);
 void		*ft_calloc(size_t count, size_t size);
 
 /**
-	@brief #### Print the philosophers structure.
 	@note//_DESCRIPTION
+	@brief #### Print the philosophers structure.
 	@brief Prints all the fields of the philosophers structure.
 	@note//_PARAMETERS
 	@param phil The philosophers structure to be printed.
@@ -269,9 +280,15 @@ int			ft_atoi(char *str);
 
 //? * --------------------- ALLOWED EXTERN FUNCTIONS --------------------- * ?//
 
+/*									NOTE
+!	The following functions are from the libraries included, the doocumentation
+! here is only for reference. For exact information about the functions, see the
+! library's documentation. 
+*/
+
 /**
-	@brief #### Set a number of bytes to a specific value.
 	@note//_DESCRIPTION
+	@brief #### Set a number of bytes to a specific value.
 	@brief Sets the first len bytes of the block of memory pointed by b to the
 	specified value (interpreted as an unsigned char).
 	@note//_PARAMETERS
@@ -294,8 +311,8 @@ void		free(void *ptr);
 ssize_t		write(int fd, const void *buf, size_t count);
 
 /**
-	@brief #### Delay execution for a number of microseconds.
 	@note//_DESCRIPTION
+	@brief #### Delay execution for a number of microseconds.
 	@brief Delays the execution of the program for the number of microseconds or
 		until a signal is delivered to the calling process.
 	@note//_PARAMETERS
@@ -310,8 +327,8 @@ ssize_t		write(int fd, const void *buf, size_t count);
 int			usleep(useconds_t microseconds);
 
 /**
-	@brief #### Get the current time.
 	@note//_DESCRIPTION
+	@brief #### Get the current time.
 	@brief Stores the current time in the timeval structure pointed to by tv
 		or/and the current timezone in the timezone structure pointed to by tz.
 	@note//_PARAMETERS
@@ -330,8 +347,8 @@ int			usleep(useconds_t microseconds);
  */
 
 /**
-	@brief #### Create a new thread.
 	@note//_DESCRIPTION
+	@brief #### Create a new thread.
 	@brief Creates a new thread, with attributes specified by `attr`, and places
 		the thread ID in the location pointed to by `thread`, and starts the
 		thread by calling the function `start_routine` with `arg` as its

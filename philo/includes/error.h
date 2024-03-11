@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 18:55:08 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/01 18:38:31 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/08 14:46:02 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ enum e_where
 	TIME_STAMP,
 	DEATH_T,
 	START_SIM,
+	STOPWATCH
 };
 
 enum e_check

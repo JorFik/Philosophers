@@ -6,38 +6,11 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 12:03:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/07 13:10:07 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/03/11 17:51:16 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-int	finish_simulation(t_phil_schedule *phil, int *original_can_eat)
-{
-	extern int	errno;
-	int			i;
-
-	i = -1;
-	while (++i < phil->count)
-		pthread_mutex_destroy(&phil->forks[i]);
-	pthread_mutex_destroy(phil->print);
-	pthread_mutex_destroy(phil->take_forks);
-	if (phil->philosopher)
-		free(phil->philosopher);
-	if (phil->ate)
-		free(phil->ate);
-	if (phil->forks)
-		free(phil->forks);
-	if (phil->phil_has_fork)
-		free(phil->phil_has_fork);
-	if (original_can_eat)
-		free(original_can_eat);
-	memset(phil, 0, sizeof(t_phil_schedule));
-	printf("\t\t\t\tSimulation finished\n");
-	if (errno && errno != 60)
-		return (errno);
-	return (0);
-}
 
 useconds_t	get_time(t_phil_schedule *phil)
 {
@@ -93,15 +66,35 @@ int	ft_atoi(char *str)
 int	ft_usleep(useconds_t time, t_phil_schedule *phil, const int index)
 {
 	useconds_t	start;
+	long long	adjustment;
 
 	start = 0;
-	while (start < time && !phil->someone_died)
-	{
-		usleep(500);
-		// start += 621;
-		start += 500;
-	}
-	if (phil->ate[index] == STARVING || phil->someone_died)
+	adjustment = get_time(phil);
+	adjustment = 50 - (adjustment % 50);
+	ft_stop_watch(phil, index, STOP);
+	adjustment = adjustment * 1000;
+	ft_stop_watch(phil, index, START);
+	adjustment += time - 50000;
+	usleep(adjustment);
+	if (phil->someone_died)
 		return (1);
+	return (0);
+}
+
+int	ft_stop_watch(t_phil_schedule *phil, const int i, int restart)
+{
+	struct timeval	time;
+
+	if (restart == START)
+	{
+		gettimeofday(&time, NULL);
+		phil->stop_watch[i] = (time.tv_usec) + (time.tv_sec * 1000000);
+		return (1);
+	}
+	else
+	{
+		gettimeofday(&time, NULL);
+		phil->stop_watch[i] -= (time.tv_usec) + (time.tv_sec * 1000000);
+	}
 	return (0);
 }
