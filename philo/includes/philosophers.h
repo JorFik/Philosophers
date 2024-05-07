@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/11 19:10:53 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/07 19:22:46 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ typedef struct s_death_timer
 	@note It adjust the time to be a multiple of 50000 microseconds or 50
 		milliseconds.
  */
-int			ft_usleep(useconds_t time, t_phil_schedule *phil);
+int			ft_usleep(useconds_t time);
 
 /**
 	@note//_DESCRIPTION
