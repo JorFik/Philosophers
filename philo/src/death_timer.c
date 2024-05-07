@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 18:17:09 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/11 18:45:41 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/07 19:39:26 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,8 @@ static int	phil_died(t_phil_schedule *phil, const int i, useconds_t now,
 		return (0);
 	if (phil && now - utils->last_meal[i] >= phil->die_time)
 	{
-		pthread_mutex_lock(&phil->forks[i]);
 		phil->someone_died++;
 		print_state(phil, i, DEATH);
-		pthread_mutex_unlock(&phil->forks[i]);
 		return (1);
 	}
 	return (0);
