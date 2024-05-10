@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 02:05:22 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/07 19:23:29 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:26:26 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	eat_meal(const int i, t_phil_schedule *phil)
 		print_state(phil, i, FORK);
 		print_state(phil, i, FORK);
 		print_state(phil, i, EAT);
-		ft_usleep(phil->eat_time * 1000);
+		ft_usleep(phil->eat_time * 1000, phil);
 		leave_forks(i, phil);
 		return (1);
 	}

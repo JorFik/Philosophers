@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:31 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/07 19:22:46 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:25:30 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,11 +140,8 @@ typedef struct s_death_timer
 	@param phil The philosophers structure.
 	@note//_RETURNS
 	@return 1 if it has stopped, otherwise 0.
-	@note//_NOTES
-	@note It adjust the time to be a multiple of 50000 microseconds or 50
-		milliseconds.
  */
-int			ft_usleep(useconds_t time);
+int			ft_usleep(useconds_t time, t_phil_schedule *phil);
 
 /**
 	@note//_DESCRIPTION

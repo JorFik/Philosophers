@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 12:03:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/07 19:38:23 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:28:38 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,12 @@ int	ft_atoi(char *str)
 	return (new_n_shiny_usable_int * sign);
 }
 
-int	ft_usleep(useconds_t time)
+int	ft_usleep(useconds_t time, t_phil_schedule *phil)
 {
 	useconds_t	start;
 
 	start = get_time(NULL);
-	if (time > 5000)
-		usleep(time - 5000);
-	while (get_time(NULL) - start < time / 1000)
+	while (get_time(NULL) - start < time / 1000 && !phil->someone_died)
 		usleep(50);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 16:30:15 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/07 19:23:13 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:26:18 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	*phil_live(void *arg)
 	phil = ((t_phil_args *)arg)->phil;
 	state = EAT;
 	if (i % 2)
-		ft_usleep(50 + (phil->eat_time * 1000));
+		ft_usleep(50 + (phil->eat_time * 1000), phil);
 	while (phil && !phil->someone_died)
 	{
 		if (state == EAT)
@@ -57,13 +57,13 @@ void	*phil_live(void *arg)
 		if (state == SLEEP)
 		{
 			state = print_state(phil, i, SLEEP);
-			ft_usleep(phil->sleep_time * 1000);
+			ft_usleep(phil->sleep_time * 1000, phil);
 		}
 		if (state == THINK)
 		{
 			state = print_state(phil, i, THINK);
 			if (phil->count % 2)
-				ft_usleep(phil->eat_time * 900);
+				ft_usleep(phil->eat_time * 900, phil);
 		}
 	}
 	return (end_phil(phil, i), NULL);
