@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/21 18:17:09 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/10 14:58:25 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:44:44 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ static void	phil_had_a_meal(t_phil_schedule *phil, const int i,
 	{
 		phil->ate[i] = HUNGRY;
 		utils->last_meal[i] = now;
-		if (++utils->times_ate[i] >= phil->meal_count)
+		if (++utils->times_ate[i] >= phil->meal_count && phil->meal_count != -1)
 		{
 			phil->full_phil++;
 		}
