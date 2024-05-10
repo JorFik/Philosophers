@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 18:51:01 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/10 15:02:51 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:40:31 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ static char	*get_error(int error)
 		return ("Error: Allocation failed for can eat flags");
 	if (error == NO_MEALS)
 		return ("Error: Not a valid number of meals");
+	if (error == INVALID_INPUT)
+		return ("Error: Invalid input");
 	return ("Error: Unknown error");
 }
 
@@ -77,6 +79,8 @@ static char	*get_where(int where)
 		return ("before starting simulation.");
 	if (where == STOPWATCH)
 		return ("when trying to use stop watch.");
+	if (where == EXPECTED)
+		return ("expected positive number.");
 	return ("at unknown location.");
 }
 

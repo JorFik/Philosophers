@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 18:55:08 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/10 15:01:56 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:40:07 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ enum e_error
 	NO_PHIL,
 	CAN_EAT,
 	NO_MEALS,
+	INVALID_INPUT,
 };
 
 enum e_where
@@ -38,7 +39,8 @@ enum e_where
 	TIME_STAMP,
 	DEATH_T,
 	START_SIM,
-	STOPWATCH
+	STOPWATCH,
+	EXPECTED
 };
 
 enum e_check

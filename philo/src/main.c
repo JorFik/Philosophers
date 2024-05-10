@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/05/10 15:05:56 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 16:40:56 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,12 @@ int	main(int argc, char **argv)
 		return (error((int [3]){-1, MORE_ARGS, ARGS}, NULL));
 	if (ft_atoi(argv[1]) < 1)
 		return (error((int [3]){-1, NO_PHIL, SIMULATION}, NULL));
+	i = 2;
+	while (i < 5)
+	{
+		if (ft_atoi(argv[i++]) < 1)
+			return (error((int [3]){-1, INVALID_INPUT, EXPECTED}, NULL));
+	}
 	if (initilize_philos(phil, argc, argv))
 		return (finish_simulation((t_phil_schedule *)phil));
 	simulation(phil, &i);
