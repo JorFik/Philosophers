@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 18:51:01 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/11 18:50:07 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 15:02:51 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ static char	*get_error(int error)
 		return ("Error: No philosophers, no simulation, no fun, no purpose.");
 	if (error == CAN_EAT)
 		return ("Error: Allocation failed for can eat flags");
+	if (error == NO_MEALS)
+		return ("Error: Not a valid number of meals");
 	return ("Error: Unknown error");
 }
 

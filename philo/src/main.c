@@ -6,7 +6,7 @@
 /*   By: JFikents <JFikents@student.42Heilbronn.de> +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/17 11:58:32 by JFikents          #+#    #+#             */
-/*   Updated: 2024/03/11 18:59:43 by JFikents         ###   ########.fr       */
+/*   Updated: 2024/05/10 15:05:56 by JFikents         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ static int	initilize_philos(t_phil_schedule *phil, int argc, char **argv)
 	phil->meal_count = -1;
 	if (argc == 6)
 		phil->meal_count = ft_atoi(argv[5]);
+	if (phil->meal_count < 1 && argc == 6)
+		return (error((int [3]){-1, NO_MEALS, SIMULATION}, NULL));
 	phil->philosopher = ft_calloc(phil->count, sizeof(pthread_t));
 	phil->ate = ft_calloc(phil->count, sizeof(int));
 	phil->forks = ft_calloc(phil->count, sizeof(pthread_mutex_t));
@@ -99,7 +101,7 @@ static int	finish_simulation(t_phil_schedule *phil)
 	int			i;
 
 	i = -1;
-	while (++i < phil->count)
+	while (++i < phil->count && phil->forks)
 		pthread_mutex_destroy(&phil->forks[i]);
 	pthread_mutex_destroy(phil->print);
 	if (phil->philosopher)
